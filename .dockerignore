@@ -1,0 +1,7 @@
+```text
+.git
+.idea
+target
+.env
+.env.*
+```
