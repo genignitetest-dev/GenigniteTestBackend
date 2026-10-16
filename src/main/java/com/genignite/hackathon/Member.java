@@ -9,6 +9,6 @@ public class Member {
   public String college;
   public String branch;
   @Column(name="study_year") public String year;
-  @NotBlank public String tshirt;
-  @NotBlank public String food;
+  public String tshirt;
+  public String food;
 }

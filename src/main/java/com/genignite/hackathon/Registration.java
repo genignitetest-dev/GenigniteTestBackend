@@ -33,6 +33,12 @@ public class Registration {
     @Column(nullable = true)
     public String paymentId;
 
+    @Column(length = 100)
+    public String paymentReference;
+
+    @Column(length = 40)
+    public String paymentStatus = "NOT_REPORTED";
+
     public String status = "PENDING";
 
     public Instant createdAt = Instant.now();

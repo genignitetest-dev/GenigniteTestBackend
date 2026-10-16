@@ -41,6 +41,28 @@ public class RegistrationController {
      * Register a participant, team, or stall without online payment.
      * The fee is calculated on the server.
      */
+
+    /** Records a user's claimed UPI reference; this does not verify or capture payment. */
+    @PostMapping("/registrations/{id}/payment-reference")
+    public Map<String, Object> submitPaymentReference(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        Registration reg = repo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registration not found"));
+        String reference = body == null ? null : body.get("reference");
+        if (blank(reference) || reference.trim().length() > 100) {
+            throw bad("A valid UPI transaction/reference number is required");
+        }
+        reg.paymentReference = reference.trim();
+        reg.paymentStatus = "PENDING_VERIFICATION";
+        repo.save(reg);
+        return Map.of(
+                "registrationId", "GZHN-" + (1000 + reg.id),
+                "paymentStatus", reg.paymentStatus,
+                "message", "Payment reference submitted for manual verification"
+        );
+    }
+
     @PostMapping("/registrations/order")
     public Map<String, Object> order(
             @Valid @RequestBody RegisterRequest r) {
@@ -133,6 +155,7 @@ public class RegistrationController {
         return Map.of(
                 "status", "PENDING",
                 "registrationId", "GZHN-" + (1000 + saved.id),
+                "databaseId", saved.id,
                 "amount", amount,
                 "message", "Registration submitted successfully"
         );
